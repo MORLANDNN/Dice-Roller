@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Dice Roller</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ВЕРХ: Панель управления -->
+        <div id="control-panel">
+            <div class="panel-header">
+                <div class="panel-title">Панель управления</div>
+                <button id="open-settings-btn" class="icon-btn" title="Настройки">⚙</button>
+            </div>
+            <!-- Сетка активных кубиков -->
+            <div class="dice-grid" id="main-dice-grid">
+                <!-- Поле Модификатора -->
+                <div class="mod-tile">
+                    <span class="mod-label">Мод</span>
+                    <input type="number" id="modifier-input" value="0" step="1">
+                </div>
+                <!-- Динамические кнопки кубиков будут вставляться сюда -->
+            </div>
+            <div class="controls-hint">
+                <span>ЛКМ: <b>+1</b></span> | <span>Shift+ЛКМ: <b>-1</b></span> | <span>ПКМ: <b>Убрать</b></span>
+            </div>
+            <!-- Строка формулы и действия -->
+            <div class="formula-container">
+                <div id="formula-display" class="formula-display">Выберите кубики...</div>
+                <div class="action-btns">
+                    <button id="clear-btn" class="action-btn clear" title="Очистить формулу">✕</button>
+                    <button id="roll-btn" class="action-btn roll" disabled>РОЛЛ</button>
+                </div>
+            </div>
+			<div id="breakdown-display" class="breakdown-display"></div>
+        </div>
+        <!-- НИЗ: Зона OBS (Хромакей и результат) -->
+        <div id="obs-zone">
+            <div class="demo-result-box">
+                <div class="value">0</div>
+            </div>
+        </div>
+		<!-- ОВЕРЛЕЙ НАСТРОЕК (Покрывает весь экран 500x500) -->
+		<div id="settings-overlay" class="overlay hidden">
+			<div class="overlay-header">
+				<h2>Настройки</h2>
+				<button id="close-settings-btn" class="icon-btn" title="Закрыть">✕</button>
+			</div>
+			<div class="overlay-content">
+				<!-- Секция управления кубиками -->
+				<div class="settings-section">
+					<h3>Отображение кубиков</h3>
+					<p class="section-hint">ЛКМ: скрыть/показать. ПКМ на кастомном кубе: удалить.</p>
+					<div id="settings-dice-grid" class="settings-dice-grid">
+						<!-- Динамические кнопки переключения -->
+					</div>
+					<button id="add-custom-dice-btn" class="add-custom-btn">+ Добавить свой куб</button>
+				</div>
+				<!-- Секция внешнего вида -->
+				<div class="settings-section">
+					<h3>Внешний вид (OBS)</h3>
+					<div class="setting-row">
+						<label>Цвет хромакея:</label>
+						<div class="chroma-palette">
+							<button class="chroma-btn active" style="background-color: #00ff00;" data-color="#00ff00" title="Зеленый"></button>
+							<button class="chroma-btn" style="background-color: #0000ff;" data-color="#0000ff" title="Синий"></button>
+							<button class="chroma-btn" style="background-color: #ff00ff;" data-color="#ff00ff" title="Пурпурный"></button>
+							<button class="chroma-btn" style="background-color: #000000;" data-color="#000000" title="Черный"></button>
+						</div>
+						<input type="color" id="custom-chroma-picker" class="custom-color-picker" value="#00ff00" title="Свой цвет">
+					</div>
+					<div class="setting-row">
+						<label>Цвет текста результата:</label>
+						<input type="color" id="text-color-picker" class="custom-color-picker" value="#50fa7b" title="Цвет числа">
+					</div>
+				</div>
+				<!-- Секция экспорта / импорта -->
+				<div class="settings-section">
+					<h3>Профиль настроек (JSON)</h3>
+					<div class="json-actions">
+						<button id="export-json-btn" class="json-btn export">Скачать JSON</button>
+						<button id="import-json-btn" class="json-btn import">Загрузить JSON</button>
+						<!-- Скрытый инпут для выбора файла -->
+						<input type="file" id="import-json-input" accept=".json" style="display: none;">
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
