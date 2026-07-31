@@ -13,6 +13,7 @@
             <div class="panel-header">
                 <div class="panel-title">Панель управления</div>
 				<div class="header-actions">
+					<button id="sign-toggle-btn" class="icon-btn" title="Переключить знак (Плюс / Минус)">+</button>					
 					<button id="preset-mode-btn" class="icon-btn" title="Создать пресет">★</button>
 					<button id="open-settings-btn" class="icon-btn" title="Настройки">⚙</button>
 				</div>
@@ -21,9 +22,10 @@
             <div class="dice-grid" id="main-dice-grid">
                 <!-- Поле Модификатора -->
                 <div class="mod-tile">
-                    <span class="mod-label">Мод</span>
-                    <input type="number" id="modifier-input" value="0" step="1">
-                </div>
+
+				  <span class="mod-label">Мод</span>
+				  <input type="number" id="modifier-input" value="0" step="1">
+				</div>
                 <!-- Динамические кнопки кубиков будут вставляться сюда -->
             </div>
             <div class="controls-hint">
@@ -73,9 +75,9 @@
 				</div>
 				<!-- Секция внешнего вида -->
 				<div class="settings-section">
-					<h3>Внешний вид (OBS)</h3>
+					<h3>Внешний вид</h3>
 					<div class="setting-row">
-						<label>Цвет хромакея:</label>
+						<label>Цвет фона:</label>
 						<div class="chroma-palette">
 							<button class="chroma-btn active" style="background-color: #00ff00;" data-color="#00ff00" title="Зеленый"></button>
 							<button class="chroma-btn" style="background-color: #0000ff;" data-color="#0000ff" title="Синий"></button>
@@ -85,8 +87,8 @@
 						<input type="color" id="custom-chroma-picker" class="custom-color-picker" value="#00ff00" title="Свой цвет">
 					</div>
 					<div class="setting-row">
-						<label>Цвет текста результата:</label>
-						<input type="color" id="text-color-picker" class="custom-color-picker" value="#50fa7b" title="Цвет числа">
+						<label>Цвет результата:</label>
+						<input type="color" id="text-color-picker" class="custom-color-picker" value="#50fa7b" title="Свой числа">
 					</div>
 					<div class="setting-row">
 					  <label>Угасание результата (сек):</label>
@@ -103,8 +105,59 @@
 						<input type="file" id="import-json-input" accept=".json" style="display: none;">
 					</div>
 				</div>
+				<div class="settings-section">
+					  <button id="open-help-btn" class="help-open-btn">Справка</button>
+					</div>
 			</div>
 		</div>
+			<!-- ОВЕРЛЕЙ СПРАВКИ -->
+	<div id="help-overlay" class="overlay hidden" style="z-index: 20;">
+	  <div class="overlay-header">
+		<h2>❓ Справка по OBS Dice Roller</h2>
+		<button id="close-help-btn" class="icon-btn" title="Закрыть">✕</button>
+	  </div>
+	  <div class="overlay-content help-body">
+		<div class="help-section">
+		  <h3>🎲 Броски кубиков</h3>
+		  <p><b>На ПК:</b></p>
+		  <ul>
+			<li><b>ЛКМ:</b> Добавить кубик (+1).</li>
+			<li><b>Shift + ЛКМ:</b> Добавить отрицательный кубик (-1).</li>
+			<li><b>ПКМ:</b> Уменьшить количество выбранных кубиков на 1.</li>
+		  </ul>
+		  <p style="margin-top: 6px;"><b>На смартфонах:</b></p>
+		  <ul>
+			<li><b>Переключатель <code>[ + / - ]</code>:</b> в верхнем правом углу, меняет знак добавляемых кубиков при нажатии.</li>
+			<li><b>Долгое нажатие (0.5 сек):</b> Сбрасывает выбранный кубик полностью.</li>
+		  </ul>
+		</div>
+		<div class="help-section">
+		  <h3>⭐ Пресеты</h3>
+		  <ul>
+			<li>Нажмите на <b>звездочку (★)</b> в верхнем правом углу, чтобы включить режим создания пресета.</li>
+			<li>Выберите нужную формулу кубиков и модификатор.</li>
+			<li>Нажмите зеленую кнопку <b>«СОХРАНИТЬ»</b> и введите название (например, <i>«Атака мечом»</i>).</li>
+			<li>Клик по сохраненному пресету в списке справа моментально совершает бросок.</li>
+			<li>Нажмите <b>«✕»</b> для отмены режима пресета.</li>
+		  </ul>
+		</div>
+		<div class="help-section">
+		  <h3>🎥 Настройка отображения</h3>
+		  <ul>
+			<li><b>Цвет фона:</b> Выберите стандартный или задайте свой цвет фона.</li>
+			<li><b>Цвет результата:</b> Выберите стандартный или задайте свой цвет результата.</li>
+			<li><b>Угасание результата:</b> Время в секундах, через которое результат исчезает после броска (0 — не скрывать результат).</li>
+		  </ul>
+		</div>
+		<div class="help-section">
+		  <h3>💾 Импорт и экспорт</h3>
+		  <ul>
+			<li>Кнопка <b>«Скачать JSON»</b> сохраняет текущие кастомные кубы, цвета, время угасания и пресеты в файл.</li>
+			<li>Кнопка <b>«Загрузить JSON»</b> позволяет восстановить все ваши настройки на любом устройстве.</li>
+		  </ul>
+		</div>
+	  </div>
+	</div>
     </div>
     <script src="script.js"></script>
 </body>

@@ -63,6 +63,7 @@ body {
     border-radius: 4px;
     transition: color 0.2s, background-color 0.2s;
 	
+	
 }
 .icon-btn:hover {
     color:#ffffff;
@@ -611,3 +612,59 @@ background: rgba(0, 0, 0, 0.2);
   color: #ff5555;
   background-color: rgba(255, 85, 85, 0.1);
 }
+
+/* --- СТИЛИ ОКНА СПРАВКИ --- */
+.help-open-btn {
+  width: 100%;
+  background-color: #18181b;
+  border: 1px solid #9580ff;
+  color: #9580ff;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s ease;
+  margin-top: 4px;
+}
+.help-open-btn:hover {
+  background-color: #9580ff;
+  color: #ffffff;
+}
+.help-body {
+  gap: 16px;
+}
+.help-section {
+  background-color: #202024;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #2b2b32;
+}
+.help-section h3 {
+  font-size: 14px;
+  color: #50fa7b;
+  margin-bottom: 8px;
+}
+.help-section p {
+  font-size: 12px;
+  color: #f1f1f1;
+}
+.help-section ul {
+  padding-left: 18px;
+  margin-top: 4px;
+}
+.help-section li {
+  font-size: 12px;
+  color: #a0a0a0;
+  margin-bottom: 4px;
+}
+.help-section b {
+  color: #f1f1f1;
+}
+.help-section code {
+  background: #18181b;
+  color: #ffb86c;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+

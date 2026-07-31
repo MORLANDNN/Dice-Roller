@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	const fadeTimeoutInput = document.getElementById('fade-timeout-input');
 	const presetModeBtn = document.getElementById('preset-mode-btn');
 	const presetsList = document.getElementById('presets-list');
+	const signToggleBtn = document.getElementById('sign-toggle-btn');
+	const openHelpBtn = document.getElementById('open-help-btn');
+	const closeHelpBtn = document.getElementById('close-help-btn');
+	const helpOverlay = document.getElementById('help-overlay');
     // --- СОСТОЯНИЕ ДАЙСОВ ---
     let diceData = {
         4:   { visible: true, custom: false, plus: 0, minus: 0 },
@@ -38,6 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	let fadeTimer = null;
 	let isPresetMode = false;
 	let presets = []; 
+	let currentMode = 'plus';
+	// Открытие / закрытие справки ---
+	openHelpBtn.addEventListener('click', () => {
+	  helpOverlay.classList.remove('hidden');
+	});
+	closeHelpBtn.addEventListener('click', () => {
+	  helpOverlay.classList.add('hidden');
+	});
     // --- ОТКРЫТИЕ / ЗАКРЫТИЕ НАСТРОЕК ---
     openSettingsBtn.addEventListener('click', () => {
         settingsOverlay.classList.remove('hidden');
@@ -225,13 +237,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.innerHTML = `к${sides} <span class="badge" id="count-k${sides}">0</span>`;
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (e.shiftKey) {
-                        diceData[sides].minus++;
-                    } else {
-                        diceData[sides].plus++;
-                    }
-                    updateBadge(sides);
-                    updateFormula();
+                     if (e.shiftKey || currentMode === 'minus') {
+						diceData[sides].minus++;
+					  } else {
+						diceData[sides].plus++;
+					  }
+					  updateBadge(sides);
+					  updateFormula();
+					});
+					// ПКМ — уменьшить число кубиков на 1 (для ПК)
+					btn.addEventListener('contextmenu', (e) => {
+					  e.preventDefault();
+					  if (diceData[sides].minus > 0) {
+						diceData[sides].minus--;
+					  } else if (diceData[sides].plus > 0) {
+						diceData[sides].plus--;
+					  }
+					  updateBadge(sides);
+					  updateFormula();
+					});
+					// ДОЛГОЕ НАЖАТИЕ (Long Press) ДЛЯ МОБИЛЬНЫХ — ПОЛНЫЙ СБРОС КУБИКА
+					let pressTimer = null;
+					btn.addEventListener('touchstart', (e) => {
+					  pressTimer = setTimeout(() => {
+						// Полный сброс этого типа кубиков
+						diceData[sides].plus = 0;
+						diceData[sides].minus = 0;
+						updateBadge(sides);
+						updateFormula();
+						// Виброотклик смартфона (если поддерживается)
+						if (navigator.vibrate) {
+						  navigator.vibrate(50);
+						}
+					  }, 500); // 500 мс удержания пальца
+					}, { passive: true });
+					btn.addEventListener('touchend', () => {
+					  clearTimeout(pressTimer);
+					});
+					btn.addEventListener('touchmove', () => {
+					  clearTimeout(pressTimer); // Если пользователь начнет скроллить
                 });
                 btn.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
@@ -328,6 +372,17 @@ document.addEventListener('DOMContentLoaded', () => {
         breakdownDisplay.textContent = '';
         updateFormula();
     });
+	signToggleBtn.addEventListener('click', () => {
+	  if (currentMode === 'plus') {
+		currentMode = 'minus';
+		signToggleBtn.textContent = '-';
+		signToggleBtn.classList.add('minus-mode');
+	  } else {
+		currentMode = 'plus';
+		signToggleBtn.textContent = '+';
+		signToggleBtn.classList.remove('minus-mode');
+	  }
+	});
 	// --- ЛОГИКА ПРЕСЕТОВ ---
 	// Включение / выключение режима пресета
 	function togglePresetMode(enable) {
