@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const breakdownDisplay = document.getElementById('breakdown-display');
     const rollBtn = document.getElementById('roll-btn');
     const clearBtn = document.getElementById('clear-btn');
+	const demoResultBox = document.querySelector('.demo-result-box');
+	const fadeTimeoutInput = document.getElementById('fade-timeout-input');
+	const presetModeBtn = document.getElementById('preset-mode-btn');
+	const presetsList = document.getElementById('presets-list');
     // --- СОСТОЯНИЕ ДАЙСОВ ---
     let diceData = {
         4:   { visible: true, custom: false, plus: 0, minus: 0 },
@@ -31,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     let modifier = 0;
     let isRolling = false;
+	let fadeTimer = null;
+	let isPresetMode = false;
+	let presets = []; 
     // --- ОТКРЫТИЕ / ЗАКРЫТИЕ НАСТРОЕК ---
     openSettingsBtn.addEventListener('click', () => {
         settingsOverlay.classList.remove('hidden');
@@ -79,10 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
         const config = {
-            bgColor: customPicker.value,
-            textColor: textColorPicker.value,
-            dice: cleanDiceConfig
-        };
+		  bgColor: customPicker.value,
+		  textColor: textColorPicker.value,
+		  fadeTimeout: fadeTimeoutInput.value,
+		  dice: cleanDiceConfig,
+		  presets: presets
+		};
         const jsonString = JSON.stringify(config, null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -103,6 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         reader.onload = (event) => {
             try {
+				if (config.presets && Array.isArray(config.presets)) {
+				  presets = config.presets;
+				  renderPresets();
+				}
                 const config = JSON.parse(event.target.result);
                 if (config.bgColor) {
                     setChromaColor(config.bgColor);
@@ -110,6 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (config.textColor) {
                     setTextColor(config.textColor);
                 }
+				if (config.fadeTimeout !== undefined) {
+				  fadeTimeoutInput.value = config.fadeTimeout;
+				}
                 if (config.dice && typeof config.dice === 'object') {
                     const newDiceData = {};
                     Object.keys(config.dice).forEach(sides => {
@@ -277,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     addCustomBtn.addEventListener('click', () => {
-        const input = prompt('Введите количество граней нового куба (например, 3, 7, 30):');
+        const input = prompt('Введите количество граней нового куба:');
         const sides = parseInt(input);
         if (sides && sides > 0) {
             if (diceData[sides]) {
@@ -301,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFormula();
     });
     clearBtn.addEventListener('click', () => {
+		togglePresetMode(false);
         Object.keys(diceData).forEach(sides => {
             diceData[sides].plus = 0;
             diceData[sides].minus = 0;
@@ -311,9 +328,108 @@ document.addEventListener('DOMContentLoaded', () => {
         breakdownDisplay.textContent = '';
         updateFormula();
     });
+	// --- ЛОГИКА ПРЕСЕТОВ ---
+	// Включение / выключение режима пресета
+	function togglePresetMode(enable) {
+	  isPresetMode = enable !== undefined ? enable : !isPresetMode;
+	  if (isPresetMode) {
+		presetModeBtn.classList.add('active');
+		rollBtn.textContent = 'СОХРАНИТЬ';
+		rollBtn.style.backgroundColor = '#50fa7b';
+		rollBtn.style.color = '#000000';
+	  } else {
+		presetModeBtn.classList.remove('active');
+		rollBtn.textContent = 'РОЛЛ';
+		rollBtn.style.backgroundColor = '#8257e5';
+		rollBtn.style.color = '#ffffff';
+	  }
+	}
+	presetModeBtn.addEventListener('click', () => {
+	  togglePresetMode();
+	});
+	// Рендер списка пресетов
+	function renderPresets() {
+	  presetsList.innerHTML = '';
+	  presets.forEach((preset, index) => {
+		const card = document.createElement('div');
+		card.className = 'preset-card';
+		// Формируем текст формулы для показа под именем
+		const parts = [];
+		Object.keys(preset.dice).forEach(sides => {
+		  const { plus, minus } = preset.dice[sides];
+		  if (plus > 0) parts.push(`+${plus}к${sides}`);
+		  if (minus > 0) parts.push(`-${minus}к${sides}`);
+		});
+		if (preset.modifier !== 0) {
+		  parts.push(preset.modifier > 0 ? `+${preset.modifier}` : `${preset.modifier}`);
+		}
+		const formulaText = parts.join(' ');
+		card.innerHTML = `<div class="preset-info">
+			<span class="preset-name">${preset.name}</span>
+			<span class="preset-formula">${formulaText}</span>
+		  </div>
+		  <button class="preset-del-btn" title="Удалить пресет">🗑</button>`;
+		// Клик по пресету — быстрый бросок
+		card.addEventListener('click', (e) => {
+		  if (e.target.classList.contains('preset-del-btn')) return;
+		  executePresetRoll(preset);
+		});
+		// Удаление пресета
+		const delBtn = card.querySelector('.preset-del-btn');
+		delBtn.addEventListener('click', (e) => {
+		  e.stopPropagation();
+		  presets.splice(index, 1);
+		  renderPresets();
+		});
+		presetsList.appendChild(card);
+	  });
+	}
+	// Быстрый бросок по пресету
+	function executePresetRoll(preset) {
+	  // Загружаем значения из пресета во временные данные
+	  Object.keys(diceData).forEach(sides => {
+		diceData[sides].plus = preset.dice[sides]?.plus || 0;
+		diceData[sides].minus = preset.dice[sides]?.minus || 0;
+		updateBadge(sides);
+	  });
+	  modifier = preset.modifier;
+	  modifierInput.value = modifier;
+	  updateFormula();
+	  // Запускаем стандартный бросок
+	  rollBtn.click();
+	}
     // --- БРОСОК С АНИМАЦИЕЙ И ДЕТАЛИЗАЦИЕЙ ---
     rollBtn.addEventListener('click', () => {
+		if (isPresetMode) {
+		const presetName = prompt('Введите название пресета:');
+		if (presetName && presetName.trim() !== '') {
+		  // Клонируем кубики для пресета
+		  const presetDice = {};
+		  Object.keys(diceData).forEach(sides => {
+			if (diceData[sides].plus > 0 || diceData[sides].minus > 0) {
+			  presetDice[sides] = {
+				plus: diceData[sides].plus,
+				minus: diceData[sides].minus
+			  };
+			}
+		  });
+		  presets.push({
+			id: Date.now(),
+			name: presetName.trim(),
+			dice: presetDice,
+			modifier: modifier
+		  });
+		  renderPresets();
+		  togglePresetMode(false); // Выходим из режима пресета
+		}
+		return; // Не выполняем сам бросок
+	  }
         if (isRolling) return;
+		  if (fadeTimer) {
+			clearTimeout(fadeTimer);
+			fadeTimer = null;
+		  }
+		  demoResultBox.classList.remove('hidden-fade');
         isRolling = true;
         rollBtn.disabled = true;
         breakdownDisplay.textContent = '';
@@ -378,8 +494,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 breakdownDisplay.textContent = breakdownText;
                 isRolling = false;
                 rollBtn.disabled = false;
-            }
-        }, frameInterval);
+				const seconds = parseFloat(fadeTimeoutInput.value);
+				if (!isNaN(seconds) && seconds > 0) {
+				  fadeTimer = setTimeout(() => {
+					demoResultBox.classList.add('hidden-fade');
+				  }, seconds * 1000);
+				}
+			  }
+			}, frameInterval);
     });
     renderMainDiceGrid();
     renderSettingsDiceGrid();

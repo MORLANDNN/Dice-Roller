@@ -12,8 +12,11 @@
         <div id="control-panel">
             <div class="panel-header">
                 <div class="panel-title">Панель управления</div>
-                <button id="open-settings-btn" class="icon-btn" title="Настройки">⚙</button>
-            </div>
+				<div class="header-actions">
+					<button id="preset-mode-btn" class="icon-btn" title="Создать пресет">★</button>
+					<button id="open-settings-btn" class="icon-btn" title="Настройки">⚙</button>
+				</div>
+			</div>
             <!-- Сетка активных кубиков -->
             <div class="dice-grid" id="main-dice-grid">
                 <!-- Поле Модификатора -->
@@ -36,12 +39,22 @@
             </div>
 			<div id="breakdown-display" class="breakdown-display"></div>
         </div>
-        <!-- НИЗ: Зона OBS (Хромакей и результат) -->
-        <div id="obs-zone">
-            <div class="demo-result-box">
-                <div class="value">0</div>
-            </div>
-        </div>
+        <!-- НИЗ -->
+        <div id="bottom-container" style="display: flex; height: 280px;">
+		  <!-- Левая часть: Зона OBS (Хромакей) -->
+		  <div id="obs-zone" style="flex: 1;">
+			<div class="demo-result-box">
+			  <div class="value">0</div>
+			</div>
+		  </div>
+		  <!-- Правая часть: Список пресетов -->
+		  <div id="presets-panel">
+			<div class="presets-header">Пресеты</div>
+			<div id="presets-list" class="presets-list">
+			  <!-- Динамические пресеты будут вставляться сюда -->
+			</div>
+		  </div>
+		</div>
 		<!-- ОВЕРЛЕЙ НАСТРОЕК (Покрывает весь экран 500x500) -->
 		<div id="settings-overlay" class="overlay hidden">
 			<div class="overlay-header">
@@ -74,6 +87,10 @@
 					<div class="setting-row">
 						<label>Цвет текста результата:</label>
 						<input type="color" id="text-color-picker" class="custom-color-picker" value="#50fa7b" title="Цвет числа">
+					</div>
+					<div class="setting-row">
+					  <label>Угасание результата (сек):</label>
+					  <input type="number" id="fade-timeout-input" class="timer-value-input" style="width: 50px; text-align: center;" value="6" min="0" step="1" title="0 или пусто = не скрывать">
 					</div>
 				</div>
 				<!-- Секция экспорта / импорта -->
