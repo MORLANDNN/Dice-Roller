@@ -433,14 +433,19 @@ background: rgba(0, 0, 0, 0.2);
     gap: 4px;
 }
 .chroma-btn {
-    width: 18px;
-    height: 18px;
+   width: 24px;
+    height: 24px;
     border-radius: 50%;
     border: 2px solid transparent;
     cursor: pointer;
+    transition: transform 0.1s ease, border-color 0.2s ease;
+}
+.chroma-btn:hover {
+    transform: scale(1.1);
 }
 .chroma-btn.active {
     border-color: #ffffff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
 }
 .custom-color-picker {
     width: 24px;
