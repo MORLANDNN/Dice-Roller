@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	const openHelpBtn = document.getElementById('open-help-btn');
 	const closeHelpBtn = document.getElementById('close-help-btn');
 	const helpOverlay = document.getElementById('help-overlay');
+	const demoResultBox = document.querySelector('.demo-result-box');
+	const boxColorPicker = document.getElementById('box-color-picker');
+	const boxPaletteBtns = document.querySelectorAll('#box-palette .chroma-btn');
     // --- СОСТОЯНИЕ ДАЙСОВ ---
     let diceData = {
         4:   { visible: true, custom: false, plus: 0, minus: 0 },
@@ -43,6 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	let isPresetMode = false;
 	let presets = []; 
 	let currentMode = 'plus';
+	// Вспомогательная функция перевода HEX (#000000) в RGBA с прозрачностью (80%)
+	function hexToRgba(hex, alpha = 1) {
+	    let c = hex.replace('#', '');
+	    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+	    const num = parseInt(c, 16);
+	    return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+	}
 	// Открытие / закрытие справки ---
 	openHelpBtn.addEventListener('click', () => {
 	  helpOverlay.classList.remove('hidden');
@@ -58,6 +68,33 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsOverlay.classList.add('hidden');
     });
     // --- НАСТРОЙКИ ЦВЕТОВ ---
+		// 2. Функция обновления цвета плашки
+	function updateBoxColor(hexColor) {
+	    // Применяем цвет к плашке (с сохраненной полупрозрачностью 0.8 для стильного вида)
+	    demoResultBox.style.backgroundColor = hexToRgba(hexColor, 0.8);
+	    boxColorPicker.value = hexColor;
+	
+	    // Обновляем обводку активной кнопки в палитре
+	    boxPaletteBtns.forEach(btn => {
+	        if (btn.dataset.color.toLowerCase() === hexColor.toLowerCase()) {
+	            btn.classList.add('active');
+	        } else {
+	            btn.classList.remove('active');
+	        }
+	    });
+	}
+	
+	// 3. Событие при изменении через color input
+	boxColorPicker.addEventListener('input', (e) => {
+	    updateBoxColor(e.target.value);
+	});
+	
+	// 4. События при клике по кружочкам палитры
+	boxPaletteBtns.forEach(btn => {
+	    btn.addEventListener('click', () => {
+	        updateBoxColor(btn.dataset.color);
+	    });
+	});
     function setChromaColor(color) {
         obsZone.style.backgroundColor = color;
         customPicker.value = color;
