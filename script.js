@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const openHelpBtn = document.getElementById('open-help-btn');
 	const closeHelpBtn = document.getElementById('close-help-btn');
 	const helpOverlay = document.getElementById('help-overlay');
+	const resultBgPaletteBtns = document.querySelectorAll('.result-bg-btn');
+	const resultBgPicker = document.getElementById('result-bg-picker');
     // --- СОСТОЯНИЕ ДАЙСОВ ---
     let diceData = {
         4:   { visible: true, custom: false, plus: 0, minus: 0 },
@@ -87,6 +89,30 @@ document.addEventListener('DOMContentLoaded', () => {
     textColorPicker.addEventListener('input', (e) => {
         setTextColor(e.target.value);
     });
+	function setResultBgColor(color) {
+	    if (demoResultBox) {
+	        demoResultBox.style.backgroundColor = color;
+	    }
+	    resultBgPicker.value = color;
+	    resultBgPaletteBtns.forEach(btn => {
+	        if (btn.getAttribute('data-color').toLowerCase() === color.toLowerCase()) {
+	            btn.classList.add('active');
+	        } else {
+	            btn.classList.remove('active');
+	        }
+	    });
+	}
+	
+	resultBgPaletteBtns.forEach(btn => {
+	    btn.addEventListener('click', () => {
+	        const color = btn.getAttribute('data-color');
+	        setResultBgColor(color);
+	    });
+	});
+	
+	resultBgPicker.addEventListener('input', (e) => {
+	    setResultBgColor(e.target.value);
+	});
     // --- ЛОГИКА ЭКСПОРТА И ИМПОРТА JSON ---
     exportJsonBtn.addEventListener('click', () => {
         // Формируем чистый объект только с настройками визуала и структуры кубов
@@ -99,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const config = {
 		  bgColor: customPicker.value,
+		  resultBgColor: resultBgPicker.value,
 		  textColor: textColorPicker.value,
 		  fadeTimeout: fadeTimeoutInput.value,
 		  dice: cleanDiceConfig,
@@ -155,6 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         diceData = newDiceData;
                     }
                 }
+				if (config.resultBgColor) {
+				    setResultBgColor(config.resultBgColor);
+				}
                 renderSettingsDiceGrid();
                 renderMainDiceGrid();
                 alert('Настройки успешно импортированы!');
