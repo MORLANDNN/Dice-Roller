@@ -231,7 +231,7 @@ background: rgba(0, 0, 0, 0.2);
     color:#a0a0a0;
 }
 .demo-result-box .value {
-    font-size: 48px;
+    font-size: 120px;
     font-weight: bold;
     color:#50fa7b;
     transition: transform 0.1s ease;
