@@ -545,7 +545,7 @@ background: rgba(0, 0, 0, 0.2);
 }
 /* Панель пресетов справа от OBS */
 #presets-panel{
-  width: 200px;
+  width: 250px;
   background-color:#18181b;
   border-left: 2px solid#2b2b32;
   display: flex;
