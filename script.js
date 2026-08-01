@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	const openHelpBtn = document.getElementById('open-help-btn');
 	const closeHelpBtn = document.getElementById('close-help-btn');
 	const helpOverlay = document.getElementById('help-overlay');
-	const demoResultBox = document.querySelector('.demo-result-box');
 	const boxColorPicker = document.getElementById('box-color-picker');
 	const boxPaletteBtns = document.querySelectorAll('#box-palette .chroma-btn');
     // --- СОСТОЯНИЕ ДАЙСОВ ---
